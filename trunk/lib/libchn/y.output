@@ -1,0 +1,406 @@
+   0  $accept : start $end
+
+   1  start : tree ';' end_file
+   2        | fatal_error end_file
+
+   3  tree : left_paren children root
+   4       | left_paren tree root
+   5       | left_paren child root
+
+   6  children : child comma children
+   7           | tree comma children
+   8           | child comma child
+   9           | tree comma child
+  10           | child comma tree
+  11           | tree comma tree
+
+  12  child : NODE
+  13        | NODE DISTANCE
+  14        | REG_NODE
+  15        | REG_NODE DISTANCE
+
+  16  comma : ','
+
+  17  left_paren : '('
+
+  18  root : ROOT
+  19       | ROOT DISTANCE
+  20       | ROOT_NODE
+  21       | ROOT_NODE DISTANCE
+
+  22  fatal_error : junk
+
+  23  end_file : END_OF_FILE
+  24           | ignore END_OF_FILE
+
+  25  ignore : ignore IGNORE
+  26         | IGNORE
+
+  27  junk : junk JUNK
+  28       | JUNK
+
+state 0
+	$accept : . start $end  (0)
+
+	JUNK  shift 1
+	'('  shift 2
+	.  error
+
+	start  goto 3
+	tree  goto 4
+	junk  goto 5
+	fatal_error  goto 6
+	left_paren  goto 7
+
+
+state 1
+	junk : JUNK .  (28)
+
+	.  reduce 28
+
+
+state 2
+	left_paren : '(' .  (17)
+
+	.  reduce 17
+
+
+state 3
+	$accept : start . $end  (0)
+
+	$end  accept
+
+
+state 4
+	start : tree . ';' end_file  (1)
+
+	';'  shift 8
+	.  error
+
+
+state 5
+	fatal_error : junk .  (22)
+	junk : junk . JUNK  (27)
+
+	JUNK  shift 9
+	IGNORE  reduce 22
+	END_OF_FILE  reduce 22
+
+
+state 6
+	start : fatal_error . end_file  (2)
+
+	IGNORE  shift 10
+	END_OF_FILE  shift 11
+	.  error
+
+	end_file  goto 12
+	ignore  goto 13
+
+
+state 7
+	tree : left_paren . children root  (3)
+	tree : left_paren . tree root  (4)
+	tree : left_paren . child root  (5)
+
+	NODE  shift 14
+	REG_NODE  shift 15
+	'('  shift 2
+	.  error
+
+	tree  goto 16
+	child  goto 17
+	children  goto 18
+	left_paren  goto 7
+
+
+state 8
+	start : tree ';' . end_file  (1)
+
+	IGNORE  shift 10
+	END_OF_FILE  shift 11
+	.  error
+
+	end_file  goto 19
+	ignore  goto 13
+
+
+state 9
+	junk : junk JUNK .  (27)
+
+	.  reduce 27
+
+
+state 10
+	ignore : IGNORE .  (26)
+
+	.  reduce 26
+
+
+state 11
+	end_file : END_OF_FILE .  (23)
+
+	.  reduce 23
+
+
+state 12
+	start : fatal_error end_file .  (2)
+
+	.  reduce 2
+
+
+state 13
+	end_file : ignore . END_OF_FILE  (24)
+	ignore : ignore . IGNORE  (25)
+
+	IGNORE  shift 20
+	END_OF_FILE  shift 21
+	.  error
+
+
+state 14
+	child : NODE .  (12)
+	child : NODE . DISTANCE  (13)
+
+	DISTANCE  shift 22
+	ROOT  reduce 12
+	ROOT_NODE  reduce 12
+	','  reduce 12
+
+
+state 15
+	child : REG_NODE .  (14)
+	child : REG_NODE . DISTANCE  (15)
+
+	DISTANCE  shift 23
+	ROOT  reduce 14
+	ROOT_NODE  reduce 14
+	','  reduce 14
+
+
+state 16
+	tree : left_paren tree . root  (4)
+	children : tree . comma children  (7)
+	children : tree . comma child  (9)
+	children : tree . comma tree  (11)
+
+	ROOT  shift 24
+	ROOT_NODE  shift 25
+	','  shift 26
+	.  error
+
+	root  goto 27
+	comma  goto 28
+
+
+state 17
+	tree : left_paren child . root  (5)
+	children : child . comma children  (6)
+	children : child . comma child  (8)
+	children : child . comma tree  (10)
+
+	ROOT  shift 24
+	ROOT_NODE  shift 25
+	','  shift 26
+	.  error
+
+	root  goto 29
+	comma  goto 30
+
+
+state 18
+	tree : left_paren children . root  (3)
+
+	ROOT  shift 24
+	ROOT_NODE  shift 25
+	.  error
+
+	root  goto 31
+
+
+state 19
+	start : tree ';' end_file .  (1)
+
+	.  reduce 1
+
+
+state 20
+	ignore : ignore IGNORE .  (25)
+
+	.  reduce 25
+
+
+state 21
+	end_file : ignore END_OF_FILE .  (24)
+
+	.  reduce 24
+
+
+state 22
+	child : NODE DISTANCE .  (13)
+
+	.  reduce 13
+
+
+state 23
+	child : REG_NODE DISTANCE .  (15)
+
+	.  reduce 15
+
+
+state 24
+	root : ROOT .  (18)
+	root : ROOT . DISTANCE  (19)
+
+	DISTANCE  shift 32
+	ROOT  reduce 18
+	ROOT_NODE  reduce 18
+	';'  reduce 18
+	','  reduce 18
+
+
+state 25
+	root : ROOT_NODE .  (20)
+	root : ROOT_NODE . DISTANCE  (21)
+
+	DISTANCE  shift 33
+	ROOT  reduce 20
+	ROOT_NODE  reduce 20
+	';'  reduce 20
+	','  reduce 20
+
+
+state 26
+	comma : ',' .  (16)
+
+	.  reduce 16
+
+
+state 27
+	tree : left_paren tree root .  (4)
+
+	.  reduce 4
+
+
+state 28
+	children : tree comma . children  (7)
+	children : tree comma . child  (9)
+	children : tree comma . tree  (11)
+
+	NODE  shift 14
+	REG_NODE  shift 15
+	'('  shift 2
+	.  error
+
+	tree  goto 34
+	child  goto 35
+	children  goto 36
+	left_paren  goto 7
+
+
+state 29
+	tree : left_paren child root .  (5)
+
+	.  reduce 5
+
+
+state 30
+	children : child comma . children  (6)
+	children : child comma . child  (8)
+	children : child comma . tree  (10)
+
+	NODE  shift 14
+	REG_NODE  shift 15
+	'('  shift 2
+	.  error
+
+	tree  goto 37
+	child  goto 38
+	children  goto 39
+	left_paren  goto 7
+
+
+state 31
+	tree : left_paren children root .  (3)
+
+	.  reduce 3
+
+
+state 32
+	root : ROOT DISTANCE .  (19)
+
+	.  reduce 19
+
+
+state 33
+	root : ROOT_NODE DISTANCE .  (21)
+
+	.  reduce 21
+
+
+state 34
+	children : tree . comma children  (7)
+	children : tree . comma child  (9)
+	children : tree . comma tree  (11)
+	children : tree comma tree .  (11)
+
+	','  shift 26
+	ROOT  reduce 11
+	ROOT_NODE  reduce 11
+
+	comma  goto 28
+
+
+state 35
+	children : child . comma children  (6)
+	children : child . comma child  (8)
+	children : tree comma child .  (9)
+	children : child . comma tree  (10)
+
+	','  shift 26
+	ROOT  reduce 9
+	ROOT_NODE  reduce 9
+
+	comma  goto 30
+
+
+state 36
+	children : tree comma children .  (7)
+
+	.  reduce 7
+
+
+state 37
+	children : tree . comma children  (7)
+	children : tree . comma child  (9)
+	children : child comma tree .  (10)
+	children : tree . comma tree  (11)
+
+	','  shift 26
+	ROOT  reduce 10
+	ROOT_NODE  reduce 10
+
+	comma  goto 28
+
+
+state 38
+	children : child . comma children  (6)
+	children : child . comma child  (8)
+	children : child comma child .  (8)
+	children : child . comma tree  (10)
+
+	','  shift 26
+	ROOT  reduce 8
+	ROOT_NODE  reduce 8
+
+	comma  goto 30
+
+
+state 39
+	children : child comma children .  (6)
+
+	.  reduce 6
+
+
+21 terminals, 12 nonterminals
+29 grammar rules, 40 states

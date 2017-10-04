@@ -1,0 +1,19 @@
+#!/bin/csh
+
+#setenv CURRENT_CC '/usr/bin/g++ -static -O3 '
+setenv CURRENT_CC 'g++ -static -O3 '
+
+set dlist = ( libstat libafn libblst libpdb libgsq libaln libalex libhmm libtools libtax libvsi libchn libhat libsarp libgsmo libomc libpsed libsprs)
+
+foreach name ($dlist)
+        if(!(-d ./lib/$name)) then
+                echo " skipping $name "
+                continue
+        endif
+#        echo " --------- $name --------"
+        cd ./lib/$name/
+        make; cd -
+end
+
+
+

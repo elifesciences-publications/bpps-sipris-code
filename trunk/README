@@ -1,0 +1,40 @@
+Programs for BPPS/SIPRIS analysis of protein domains.
+
+For further information contact:
+ Prof. Andrew F. Neuwald
+ Institute for Genome Sciences and
+ Department of Biochemistry & Molecular Biology
+ University of Maryland School of Medicine
+ 801 West Baltimore St.
+ BioPark II, Room 617
+ Baltimore, MD 21201
+ Tel: 410-706-6724; Fax: 410-706-1482
+ E-mail: aneuwald@som.umaryland.edu
+
+To compile the code simply type "./mkdrivers" within the src_code/ directory. This will
+	create executables within the src_code/bin/ directory. WARNING: lex and yacc 
+	must be on your path for code compilation. If only flex and bison are available,
+	then symbolic links (lex --> flex and yacc --> bison) may be set up instead.
+
+Literature references:
+1. Neuwald, A.F. 2009. Rapid detection, classification and accurate alignment of up to
+        a million or more related protein sequences.  Bioinformatics 25: 1869-1875
+        (Describes an initial version of the MAPGAPS program.)
+
+2. Neuwald, A.F. 2011. Surveying the manifold divergence of an entire protein class for
+        statistical clues to underlying biochemical mechanisms.  Statistical Applications
+        in Genetics and Molecular Biology 10(1): Article 36. (30 pages)
+        (Describes a basic version of BPPS sampling).
+
+3. Neuwald, A.F. 2014. A Bayesian sampler for optimization of protein domain hierarchies.
+        Journal of Computational Biology 21(3): 269-286.
+        (Describes the first step in the BPPS sampler used here).
+
+4. Neuwald, A.F. 2014. Protein Domain Hierarchy Gibbs Sampling Strategies. Statistical
+        Applications in Genetics and Molecular Biology 13(4):497-517.
+        (Describes statistical aspects of BPPS sampling).
+
+5. Neuwald, A.F., L. Aravind & S.F. Altschul. 2017. Inferring Joint Sequence-Structural
+        Determinants of Protein Functional Specificity. eLife In revision.
+	(Describes BPPS/SIPRIS analysis using the mapgaps, bpps & sipris programs.)
+

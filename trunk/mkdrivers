@@ -1,0 +1,12 @@
+#!/bin/csh
+
+# setenv CURRENT_CC '/usr/bin/g++ -static -O3 '
+setenv CURRENT_CC 'g++ -static -O3 '
+
+./mklib
+
+cd drivers/bpps_sipris/
+make all
+cd -
+
+

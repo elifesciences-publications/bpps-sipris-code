@@ -1,0 +1,22 @@
+#!/bin/csh
+
+foreach name (./lib/lib*)
+	if(!(-d $name)) then 
+		echo " skipping $name "
+		continue
+	endif
+	echo " --------- $name --------"
+	cd $name/
+	make clean; cd -
+end
+
+foreach name (./drivers/*)
+	if(!(-d $name)) then 
+		echo " skipping $name "
+		continue
+	endif
+	echo " --------- $name --------"
+	cd $name/
+	make clean; cd -
+end
+
