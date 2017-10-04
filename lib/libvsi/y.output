@@ -1,0 +1,1311 @@
+   0  $accept : start $end
+
+   1  start : nl item_list end_file
+   2        | COMMENT nl item_list end_file
+   3        | item_list end_file
+   4        | COMMENT nl fatal_error nl
+   5        | nl fatal_error nl
+   6        | fatal_error nl
+   7        | error nl end_file
+
+   8  fatal_error : item_list junk
+   9              | junk
+
+  10  item_list : item_list item nl
+  11            | item_list item ','
+  12            | item_list item COMMENT nl
+  13            | pdbfile nl
+  14            | pdbfile nl item nl
+  15            | pdbfile nl item ','
+  16            | pdbfile nl item COMMENT nl
+
+  17  item : residue
+  18       | residue INTEGER
+  19       | molecule
+  20       | molecule INTEGER
+  21       | cmd
+  22       | trace
+  23       | trace INTEGER
+  24       | view
+
+  25  cmd : CLEAR
+  26      | echo
+
+  27  echo : ECHO_CMD
+
+  28  end_file : END_OF_FILE
+
+  29  view : VIEW
+
+  30  trace : INTEGER '-' INTEGER backbone COLOR
+  31        | INTEGER '-' INTEGER CHAIN backbone COLOR
+
+  32  backbone : '^'
+  33           | '.'
+  34           | '+'
+  35           | '~'
+  36           | ':'
+  37           | '@'
+
+  38  residue : RESIDUE INTEGER '.' color
+  39          | RESIDUE INTEGER CHAIN '.' color
+  40          | RESIDUE INTEGER '_' atom '.' color
+  41          | RESIDUE INTEGER CHAIN '_' atom '.' color
+  42          | RESIDUE INTEGER '_' CARBONYL '.' color
+  43          | RESIDUE INTEGER CHAIN '_' CARBONYL '.' color
+  44          | RESIDUE INTEGER '_' atom '-' hydrogen '.' color
+  45          | RESIDUE INTEGER CHAIN '_' atom '-' hydrogen '.' color
+
+  46  molecule : MOLECULE INTEGER '.' color
+  47           | MOLECULE INTEGER CHAIN '.' color
+  48           | MOLECULE INTEGER '_' atom '.' color
+  49           | MOLECULE INTEGER CHAIN '_' atom '.' color
+  50           | MOLECULE INTEGER '_' atom '-' hydrogen '.' color
+  51           | MOLECULE INTEGER CHAIN '_' atom '-' hydrogen '.' color
+
+  52  atom : AN_ATOM
+
+  53  hydrogen : HYDROGEN
+
+  54  color : '{' COLOR '}'
+  55        | '(' COLOR ')'
+  56        | COLOR
+
+  57  junk : junk JUNK
+  58       | JUNK
+
+  59  pdbfile : PDBFILE
+  60          | PDBFILE COMMENT
+
+  61  nl : nl COMMENT NEWLINE
+  62     | nl NEWLINE
+  63     | NEWLINE
+
+state 0
+	$accept : . start $end  (0)
+
+	error  shift 1
+	PDBFILE  shift 2
+	COMMENT  shift 3
+	JUNK  shift 4
+	NEWLINE  shift 5
+	.  error
+
+	start  goto 6
+	item_list  goto 7
+	junk  goto 8
+	fatal_error  goto 9
+	pdbfile  goto 10
+	nl  goto 11
+
+
+state 1
+	start : error . nl end_file  (7)
+
+	NEWLINE  shift 5
+	.  error
+
+	nl  goto 12
+
+
+state 2
+	pdbfile : PDBFILE .  (59)
+	pdbfile : PDBFILE . COMMENT  (60)
+
+	COMMENT  shift 13
+	NEWLINE  reduce 59
+
+
+state 3
+	start : COMMENT . nl item_list end_file  (2)
+	start : COMMENT . nl fatal_error nl  (4)
+
+	NEWLINE  shift 5
+	.  error
+
+	nl  goto 14
+
+
+state 4
+	junk : JUNK .  (58)
+
+	.  reduce 58
+
+
+state 5
+	nl : NEWLINE .  (63)
+
+	.  reduce 63
+
+
+state 6
+	$accept : start . $end  (0)
+
+	$end  accept
+
+
+state 7
+	start : item_list . end_file  (3)
+	fatal_error : item_list . junk  (8)
+	item_list : item_list . item nl  (10)
+	item_list : item_list . item ','  (11)
+	item_list : item_list . item COMMENT nl  (12)
+
+	RESIDUE  shift 15
+	MOLECULE  shift 16
+	ECHO_CMD  shift 17
+	INTEGER  shift 18
+	VIEW  shift 19
+	JUNK  shift 4
+	END_OF_FILE  shift 20
+	CLEAR  shift 21
+	.  error
+
+	trace  goto 22
+	item  goto 23
+	residue  goto 24
+	molecule  goto 25
+	echo  goto 26
+	view  goto 27
+	cmd  goto 28
+	junk  goto 29
+	end_file  goto 30
+
+
+state 8
+	fatal_error : junk .  (9)
+	junk : junk . JUNK  (57)
+
+	JUNK  shift 31
+	NEWLINE  reduce 9
+
+
+state 9
+	start : fatal_error . nl  (6)
+
+	NEWLINE  shift 5
+	.  error
+
+	nl  goto 32
+
+
+state 10
+	item_list : pdbfile . nl  (13)
+	item_list : pdbfile . nl item nl  (14)
+	item_list : pdbfile . nl item ','  (15)
+	item_list : pdbfile . nl item COMMENT nl  (16)
+
+	NEWLINE  shift 5
+	.  error
+
+	nl  goto 33
+
+
+state 11
+	start : nl . item_list end_file  (1)
+	start : nl . fatal_error nl  (5)
+	nl : nl . COMMENT NEWLINE  (61)
+	nl : nl . NEWLINE  (62)
+
+	PDBFILE  shift 2
+	COMMENT  shift 34
+	JUNK  shift 4
+	NEWLINE  shift 35
+	.  error
+
+	item_list  goto 36
+	junk  goto 8
+	fatal_error  goto 37
+	pdbfile  goto 10
+
+
+state 12
+	start : error nl . end_file  (7)
+	nl : nl . COMMENT NEWLINE  (61)
+	nl : nl . NEWLINE  (62)
+
+	COMMENT  shift 34
+	NEWLINE  shift 35
+	END_OF_FILE  shift 20
+	.  error
+
+	end_file  goto 38
+
+
+state 13
+	pdbfile : PDBFILE COMMENT .  (60)
+
+	.  reduce 60
+
+
+state 14
+	start : COMMENT nl . item_list end_file  (2)
+	start : COMMENT nl . fatal_error nl  (4)
+	nl : nl . COMMENT NEWLINE  (61)
+	nl : nl . NEWLINE  (62)
+
+	PDBFILE  shift 2
+	COMMENT  shift 34
+	JUNK  shift 4
+	NEWLINE  shift 35
+	.  error
+
+	item_list  goto 39
+	junk  goto 8
+	fatal_error  goto 40
+	pdbfile  goto 10
+
+
+state 15
+	residue : RESIDUE . INTEGER '.' color  (38)
+	residue : RESIDUE . INTEGER CHAIN '.' color  (39)
+	residue : RESIDUE . INTEGER '_' atom '.' color  (40)
+	residue : RESIDUE . INTEGER CHAIN '_' atom '.' color  (41)
+	residue : RESIDUE . INTEGER '_' CARBONYL '.' color  (42)
+	residue : RESIDUE . INTEGER CHAIN '_' CARBONYL '.' color  (43)
+	residue : RESIDUE . INTEGER '_' atom '-' hydrogen '.' color  (44)
+	residue : RESIDUE . INTEGER CHAIN '_' atom '-' hydrogen '.' color  (45)
+
+	INTEGER  shift 41
+	.  error
+
+
+state 16
+	molecule : MOLECULE . INTEGER '.' color  (46)
+	molecule : MOLECULE . INTEGER CHAIN '.' color  (47)
+	molecule : MOLECULE . INTEGER '_' atom '.' color  (48)
+	molecule : MOLECULE . INTEGER CHAIN '_' atom '.' color  (49)
+	molecule : MOLECULE . INTEGER '_' atom '-' hydrogen '.' color  (50)
+	molecule : MOLECULE . INTEGER CHAIN '_' atom '-' hydrogen '.' color  (51)
+
+	INTEGER  shift 42
+	.  error
+
+
+state 17
+	echo : ECHO_CMD .  (27)
+
+	.  reduce 27
+
+
+state 18
+	trace : INTEGER . '-' INTEGER backbone COLOR  (30)
+	trace : INTEGER . '-' INTEGER CHAIN backbone COLOR  (31)
+
+	'-'  shift 43
+	.  error
+
+
+state 19
+	view : VIEW .  (29)
+
+	.  reduce 29
+
+
+state 20
+	end_file : END_OF_FILE .  (28)
+
+	.  reduce 28
+
+
+state 21
+	cmd : CLEAR .  (25)
+
+	.  reduce 25
+
+
+state 22
+	item : trace .  (22)
+	item : trace . INTEGER  (23)
+
+	INTEGER  shift 44
+	COMMENT  reduce 22
+	NEWLINE  reduce 22
+	','  reduce 22
+
+
+state 23
+	item_list : item_list item . nl  (10)
+	item_list : item_list item . ','  (11)
+	item_list : item_list item . COMMENT nl  (12)
+
+	COMMENT  shift 45
+	NEWLINE  shift 5
+	','  shift 46
+	.  error
+
+	nl  goto 47
+
+
+state 24
+	item : residue .  (17)
+	item : residue . INTEGER  (18)
+
+	INTEGER  shift 48
+	COMMENT  reduce 17
+	NEWLINE  reduce 17
+	','  reduce 17
+
+
+state 25
+	item : molecule .  (19)
+	item : molecule . INTEGER  (20)
+
+	INTEGER  shift 49
+	COMMENT  reduce 19
+	NEWLINE  reduce 19
+	','  reduce 19
+
+
+state 26
+	cmd : echo .  (26)
+
+	.  reduce 26
+
+
+state 27
+	item : view .  (24)
+
+	.  reduce 24
+
+
+state 28
+	item : cmd .  (21)
+
+	.  reduce 21
+
+
+state 29
+	fatal_error : item_list junk .  (8)
+	junk : junk . JUNK  (57)
+
+	JUNK  shift 31
+	NEWLINE  reduce 8
+
+
+state 30
+	start : item_list end_file .  (3)
+
+	.  reduce 3
+
+
+state 31
+	junk : junk JUNK .  (57)
+
+	.  reduce 57
+
+
+state 32
+	start : fatal_error nl .  (6)
+	nl : nl . COMMENT NEWLINE  (61)
+	nl : nl . NEWLINE  (62)
+
+	COMMENT  shift 34
+	NEWLINE  shift 35
+	$end  reduce 6
+
+
+33: shift/reduce conflict (shift 15, reduce 13) on RESIDUE
+33: shift/reduce conflict (shift 16, reduce 13) on MOLECULE
+33: shift/reduce conflict (shift 17, reduce 13) on ECHO_CMD
+33: shift/reduce conflict (shift 18, reduce 13) on INTEGER
+33: shift/reduce conflict (shift 19, reduce 13) on VIEW
+33: shift/reduce conflict (shift 21, reduce 13) on CLEAR
+state 33
+	item_list : pdbfile nl .  (13)
+	item_list : pdbfile nl . item nl  (14)
+	item_list : pdbfile nl . item ','  (15)
+	item_list : pdbfile nl . item COMMENT nl  (16)
+	nl : nl . COMMENT NEWLINE  (61)
+	nl : nl . NEWLINE  (62)
+
+	RESIDUE  shift 15
+	MOLECULE  shift 16
+	ECHO_CMD  shift 17
+	COMMENT  shift 34
+	INTEGER  shift 18
+	VIEW  shift 19
+	NEWLINE  shift 35
+	CLEAR  shift 21
+	JUNK  reduce 13
+	END_OF_FILE  reduce 13
+
+	trace  goto 22
+	item  goto 50
+	residue  goto 24
+	molecule  goto 25
+	echo  goto 26
+	view  goto 27
+	cmd  goto 28
+
+
+state 34
+	nl : nl COMMENT . NEWLINE  (61)
+
+	NEWLINE  shift 51
+	.  error
+
+
+state 35
+	nl : nl NEWLINE .  (62)
+
+	.  reduce 62
+
+
+state 36
+	start : nl item_list . end_file  (1)
+	fatal_error : item_list . junk  (8)
+	item_list : item_list . item nl  (10)
+	item_list : item_list . item ','  (11)
+	item_list : item_list . item COMMENT nl  (12)
+
+	RESIDUE  shift 15
+	MOLECULE  shift 16
+	ECHO_CMD  shift 17
+	INTEGER  shift 18
+	VIEW  shift 19
+	JUNK  shift 4
+	END_OF_FILE  shift 20
+	CLEAR  shift 21
+	.  error
+
+	trace  goto 22
+	item  goto 23
+	residue  goto 24
+	molecule  goto 25
+	echo  goto 26
+	view  goto 27
+	cmd  goto 28
+	junk  goto 29
+	end_file  goto 52
+
+
+state 37
+	start : nl fatal_error . nl  (5)
+
+	NEWLINE  shift 5
+	.  error
+
+	nl  goto 53
+
+
+state 38
+	start : error nl end_file .  (7)
+
+	.  reduce 7
+
+
+state 39
+	start : COMMENT nl item_list . end_file  (2)
+	fatal_error : item_list . junk  (8)
+	item_list : item_list . item nl  (10)
+	item_list : item_list . item ','  (11)
+	item_list : item_list . item COMMENT nl  (12)
+
+	RESIDUE  shift 15
+	MOLECULE  shift 16
+	ECHO_CMD  shift 17
+	INTEGER  shift 18
+	VIEW  shift 19
+	JUNK  shift 4
+	END_OF_FILE  shift 20
+	CLEAR  shift 21
+	.  error
+
+	trace  goto 22
+	item  goto 23
+	residue  goto 24
+	molecule  goto 25
+	echo  goto 26
+	view  goto 27
+	cmd  goto 28
+	junk  goto 29
+	end_file  goto 54
+
+
+state 40
+	start : COMMENT nl fatal_error . nl  (4)
+
+	NEWLINE  shift 5
+	.  error
+
+	nl  goto 55
+
+
+state 41
+	residue : RESIDUE INTEGER . '.' color  (38)
+	residue : RESIDUE INTEGER . CHAIN '.' color  (39)
+	residue : RESIDUE INTEGER . '_' atom '.' color  (40)
+	residue : RESIDUE INTEGER . CHAIN '_' atom '.' color  (41)
+	residue : RESIDUE INTEGER . '_' CARBONYL '.' color  (42)
+	residue : RESIDUE INTEGER . CHAIN '_' CARBONYL '.' color  (43)
+	residue : RESIDUE INTEGER . '_' atom '-' hydrogen '.' color  (44)
+	residue : RESIDUE INTEGER . CHAIN '_' atom '-' hydrogen '.' color  (45)
+
+	CHAIN  shift 56
+	'.'  shift 57
+	'_'  shift 58
+	.  error
+
+
+state 42
+	molecule : MOLECULE INTEGER . '.' color  (46)
+	molecule : MOLECULE INTEGER . CHAIN '.' color  (47)
+	molecule : MOLECULE INTEGER . '_' atom '.' color  (48)
+	molecule : MOLECULE INTEGER . CHAIN '_' atom '.' color  (49)
+	molecule : MOLECULE INTEGER . '_' atom '-' hydrogen '.' color  (50)
+	molecule : MOLECULE INTEGER . CHAIN '_' atom '-' hydrogen '.' color  (51)
+
+	CHAIN  shift 59
+	'.'  shift 60
+	'_'  shift 61
+	.  error
+
+
+state 43
+	trace : INTEGER '-' . INTEGER backbone COLOR  (30)
+	trace : INTEGER '-' . INTEGER CHAIN backbone COLOR  (31)
+
+	INTEGER  shift 62
+	.  error
+
+
+state 44
+	item : trace INTEGER .  (23)
+
+	.  reduce 23
+
+
+state 45
+	item_list : item_list item COMMENT . nl  (12)
+
+	NEWLINE  shift 5
+	.  error
+
+	nl  goto 63
+
+
+state 46
+	item_list : item_list item ',' .  (11)
+
+	.  reduce 11
+
+
+state 47
+	item_list : item_list item nl .  (10)
+	nl : nl . COMMENT NEWLINE  (61)
+	nl : nl . NEWLINE  (62)
+
+	COMMENT  shift 34
+	NEWLINE  shift 35
+	RESIDUE  reduce 10
+	MOLECULE  reduce 10
+	ECHO_CMD  reduce 10
+	INTEGER  reduce 10
+	VIEW  reduce 10
+	JUNK  reduce 10
+	END_OF_FILE  reduce 10
+	CLEAR  reduce 10
+
+
+state 48
+	item : residue INTEGER .  (18)
+
+	.  reduce 18
+
+
+state 49
+	item : molecule INTEGER .  (20)
+
+	.  reduce 20
+
+
+state 50
+	item_list : pdbfile nl item . nl  (14)
+	item_list : pdbfile nl item . ','  (15)
+	item_list : pdbfile nl item . COMMENT nl  (16)
+
+	COMMENT  shift 64
+	NEWLINE  shift 5
+	','  shift 65
+	.  error
+
+	nl  goto 66
+
+
+state 51
+	nl : nl COMMENT NEWLINE .  (61)
+
+	.  reduce 61
+
+
+state 52
+	start : nl item_list end_file .  (1)
+
+	.  reduce 1
+
+
+state 53
+	start : nl fatal_error nl .  (5)
+	nl : nl . COMMENT NEWLINE  (61)
+	nl : nl . NEWLINE  (62)
+
+	COMMENT  shift 34
+	NEWLINE  shift 35
+	$end  reduce 5
+
+
+state 54
+	start : COMMENT nl item_list end_file .  (2)
+
+	.  reduce 2
+
+
+state 55
+	start : COMMENT nl fatal_error nl .  (4)
+	nl : nl . COMMENT NEWLINE  (61)
+	nl : nl . NEWLINE  (62)
+
+	COMMENT  shift 34
+	NEWLINE  shift 35
+	$end  reduce 4
+
+
+state 56
+	residue : RESIDUE INTEGER CHAIN . '.' color  (39)
+	residue : RESIDUE INTEGER CHAIN . '_' atom '.' color  (41)
+	residue : RESIDUE INTEGER CHAIN . '_' CARBONYL '.' color  (43)
+	residue : RESIDUE INTEGER CHAIN . '_' atom '-' hydrogen '.' color  (45)
+
+	'.'  shift 67
+	'_'  shift 68
+	.  error
+
+
+state 57
+	residue : RESIDUE INTEGER '.' . color  (38)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 72
+
+
+state 58
+	residue : RESIDUE INTEGER '_' . atom '.' color  (40)
+	residue : RESIDUE INTEGER '_' . CARBONYL '.' color  (42)
+	residue : RESIDUE INTEGER '_' . atom '-' hydrogen '.' color  (44)
+
+	AN_ATOM  shift 73
+	CARBONYL  shift 74
+	.  error
+
+	atom  goto 75
+
+
+state 59
+	molecule : MOLECULE INTEGER CHAIN . '.' color  (47)
+	molecule : MOLECULE INTEGER CHAIN . '_' atom '.' color  (49)
+	molecule : MOLECULE INTEGER CHAIN . '_' atom '-' hydrogen '.' color  (51)
+
+	'.'  shift 76
+	'_'  shift 77
+	.  error
+
+
+state 60
+	molecule : MOLECULE INTEGER '.' . color  (46)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 78
+
+
+state 61
+	molecule : MOLECULE INTEGER '_' . atom '.' color  (48)
+	molecule : MOLECULE INTEGER '_' . atom '-' hydrogen '.' color  (50)
+
+	AN_ATOM  shift 73
+	.  error
+
+	atom  goto 79
+
+
+state 62
+	trace : INTEGER '-' INTEGER . backbone COLOR  (30)
+	trace : INTEGER '-' INTEGER . CHAIN backbone COLOR  (31)
+
+	CHAIN  shift 80
+	'^'  shift 81
+	'.'  shift 82
+	'+'  shift 83
+	'~'  shift 84
+	':'  shift 85
+	'@'  shift 86
+	.  error
+
+	backbone  goto 87
+
+
+state 63
+	item_list : item_list item COMMENT nl .  (12)
+	nl : nl . COMMENT NEWLINE  (61)
+	nl : nl . NEWLINE  (62)
+
+	COMMENT  shift 34
+	NEWLINE  shift 35
+	RESIDUE  reduce 12
+	MOLECULE  reduce 12
+	ECHO_CMD  reduce 12
+	INTEGER  reduce 12
+	VIEW  reduce 12
+	JUNK  reduce 12
+	END_OF_FILE  reduce 12
+	CLEAR  reduce 12
+
+
+state 64
+	item_list : pdbfile nl item COMMENT . nl  (16)
+
+	NEWLINE  shift 5
+	.  error
+
+	nl  goto 88
+
+
+state 65
+	item_list : pdbfile nl item ',' .  (15)
+
+	.  reduce 15
+
+
+state 66
+	item_list : pdbfile nl item nl .  (14)
+	nl : nl . COMMENT NEWLINE  (61)
+	nl : nl . NEWLINE  (62)
+
+	COMMENT  shift 34
+	NEWLINE  shift 35
+	RESIDUE  reduce 14
+	MOLECULE  reduce 14
+	ECHO_CMD  reduce 14
+	INTEGER  reduce 14
+	VIEW  reduce 14
+	JUNK  reduce 14
+	END_OF_FILE  reduce 14
+	CLEAR  reduce 14
+
+
+state 67
+	residue : RESIDUE INTEGER CHAIN '.' . color  (39)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 89
+
+
+state 68
+	residue : RESIDUE INTEGER CHAIN '_' . atom '.' color  (41)
+	residue : RESIDUE INTEGER CHAIN '_' . CARBONYL '.' color  (43)
+	residue : RESIDUE INTEGER CHAIN '_' . atom '-' hydrogen '.' color  (45)
+
+	AN_ATOM  shift 73
+	CARBONYL  shift 90
+	.  error
+
+	atom  goto 91
+
+
+state 69
+	color : COLOR .  (56)
+
+	.  reduce 56
+
+
+state 70
+	color : '{' . COLOR '}'  (54)
+
+	COLOR  shift 92
+	.  error
+
+
+state 71
+	color : '(' . COLOR ')'  (55)
+
+	COLOR  shift 93
+	.  error
+
+
+state 72
+	residue : RESIDUE INTEGER '.' color .  (38)
+
+	.  reduce 38
+
+
+state 73
+	atom : AN_ATOM .  (52)
+
+	.  reduce 52
+
+
+state 74
+	residue : RESIDUE INTEGER '_' CARBONYL . '.' color  (42)
+
+	'.'  shift 94
+	.  error
+
+
+state 75
+	residue : RESIDUE INTEGER '_' atom . '.' color  (40)
+	residue : RESIDUE INTEGER '_' atom . '-' hydrogen '.' color  (44)
+
+	'-'  shift 95
+	'.'  shift 96
+	.  error
+
+
+state 76
+	molecule : MOLECULE INTEGER CHAIN '.' . color  (47)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 97
+
+
+state 77
+	molecule : MOLECULE INTEGER CHAIN '_' . atom '.' color  (49)
+	molecule : MOLECULE INTEGER CHAIN '_' . atom '-' hydrogen '.' color  (51)
+
+	AN_ATOM  shift 73
+	.  error
+
+	atom  goto 98
+
+
+state 78
+	molecule : MOLECULE INTEGER '.' color .  (46)
+
+	.  reduce 46
+
+
+state 79
+	molecule : MOLECULE INTEGER '_' atom . '.' color  (48)
+	molecule : MOLECULE INTEGER '_' atom . '-' hydrogen '.' color  (50)
+
+	'-'  shift 99
+	'.'  shift 100
+	.  error
+
+
+state 80
+	trace : INTEGER '-' INTEGER CHAIN . backbone COLOR  (31)
+
+	'^'  shift 81
+	'.'  shift 82
+	'+'  shift 83
+	'~'  shift 84
+	':'  shift 85
+	'@'  shift 86
+	.  error
+
+	backbone  goto 101
+
+
+state 81
+	backbone : '^' .  (32)
+
+	.  reduce 32
+
+
+state 82
+	backbone : '.' .  (33)
+
+	.  reduce 33
+
+
+state 83
+	backbone : '+' .  (34)
+
+	.  reduce 34
+
+
+state 84
+	backbone : '~' .  (35)
+
+	.  reduce 35
+
+
+state 85
+	backbone : ':' .  (36)
+
+	.  reduce 36
+
+
+state 86
+	backbone : '@' .  (37)
+
+	.  reduce 37
+
+
+state 87
+	trace : INTEGER '-' INTEGER backbone . COLOR  (30)
+
+	COLOR  shift 102
+	.  error
+
+
+state 88
+	item_list : pdbfile nl item COMMENT nl .  (16)
+	nl : nl . COMMENT NEWLINE  (61)
+	nl : nl . NEWLINE  (62)
+
+	COMMENT  shift 34
+	NEWLINE  shift 35
+	RESIDUE  reduce 16
+	MOLECULE  reduce 16
+	ECHO_CMD  reduce 16
+	INTEGER  reduce 16
+	VIEW  reduce 16
+	JUNK  reduce 16
+	END_OF_FILE  reduce 16
+	CLEAR  reduce 16
+
+
+state 89
+	residue : RESIDUE INTEGER CHAIN '.' color .  (39)
+
+	.  reduce 39
+
+
+state 90
+	residue : RESIDUE INTEGER CHAIN '_' CARBONYL . '.' color  (43)
+
+	'.'  shift 103
+	.  error
+
+
+state 91
+	residue : RESIDUE INTEGER CHAIN '_' atom . '.' color  (41)
+	residue : RESIDUE INTEGER CHAIN '_' atom . '-' hydrogen '.' color  (45)
+
+	'-'  shift 104
+	'.'  shift 105
+	.  error
+
+
+state 92
+	color : '{' COLOR . '}'  (54)
+
+	'}'  shift 106
+	.  error
+
+
+state 93
+	color : '(' COLOR . ')'  (55)
+
+	')'  shift 107
+	.  error
+
+
+state 94
+	residue : RESIDUE INTEGER '_' CARBONYL '.' . color  (42)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 108
+
+
+state 95
+	residue : RESIDUE INTEGER '_' atom '-' . hydrogen '.' color  (44)
+
+	HYDROGEN  shift 109
+	.  error
+
+	hydrogen  goto 110
+
+
+state 96
+	residue : RESIDUE INTEGER '_' atom '.' . color  (40)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 111
+
+
+state 97
+	molecule : MOLECULE INTEGER CHAIN '.' color .  (47)
+
+	.  reduce 47
+
+
+state 98
+	molecule : MOLECULE INTEGER CHAIN '_' atom . '.' color  (49)
+	molecule : MOLECULE INTEGER CHAIN '_' atom . '-' hydrogen '.' color  (51)
+
+	'-'  shift 112
+	'.'  shift 113
+	.  error
+
+
+state 99
+	molecule : MOLECULE INTEGER '_' atom '-' . hydrogen '.' color  (50)
+
+	HYDROGEN  shift 109
+	.  error
+
+	hydrogen  goto 114
+
+
+state 100
+	molecule : MOLECULE INTEGER '_' atom '.' . color  (48)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 115
+
+
+state 101
+	trace : INTEGER '-' INTEGER CHAIN backbone . COLOR  (31)
+
+	COLOR  shift 116
+	.  error
+
+
+state 102
+	trace : INTEGER '-' INTEGER backbone COLOR .  (30)
+
+	.  reduce 30
+
+
+state 103
+	residue : RESIDUE INTEGER CHAIN '_' CARBONYL '.' . color  (43)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 117
+
+
+state 104
+	residue : RESIDUE INTEGER CHAIN '_' atom '-' . hydrogen '.' color  (45)
+
+	HYDROGEN  shift 109
+	.  error
+
+	hydrogen  goto 118
+
+
+state 105
+	residue : RESIDUE INTEGER CHAIN '_' atom '.' . color  (41)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 119
+
+
+state 106
+	color : '{' COLOR '}' .  (54)
+
+	.  reduce 54
+
+
+state 107
+	color : '(' COLOR ')' .  (55)
+
+	.  reduce 55
+
+
+state 108
+	residue : RESIDUE INTEGER '_' CARBONYL '.' color .  (42)
+
+	.  reduce 42
+
+
+state 109
+	hydrogen : HYDROGEN .  (53)
+
+	.  reduce 53
+
+
+state 110
+	residue : RESIDUE INTEGER '_' atom '-' hydrogen . '.' color  (44)
+
+	'.'  shift 120
+	.  error
+
+
+state 111
+	residue : RESIDUE INTEGER '_' atom '.' color .  (40)
+
+	.  reduce 40
+
+
+state 112
+	molecule : MOLECULE INTEGER CHAIN '_' atom '-' . hydrogen '.' color  (51)
+
+	HYDROGEN  shift 109
+	.  error
+
+	hydrogen  goto 121
+
+
+state 113
+	molecule : MOLECULE INTEGER CHAIN '_' atom '.' . color  (49)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 122
+
+
+state 114
+	molecule : MOLECULE INTEGER '_' atom '-' hydrogen . '.' color  (50)
+
+	'.'  shift 123
+	.  error
+
+
+state 115
+	molecule : MOLECULE INTEGER '_' atom '.' color .  (48)
+
+	.  reduce 48
+
+
+state 116
+	trace : INTEGER '-' INTEGER CHAIN backbone COLOR .  (31)
+
+	.  reduce 31
+
+
+state 117
+	residue : RESIDUE INTEGER CHAIN '_' CARBONYL '.' color .  (43)
+
+	.  reduce 43
+
+
+state 118
+	residue : RESIDUE INTEGER CHAIN '_' atom '-' hydrogen . '.' color  (45)
+
+	'.'  shift 124
+	.  error
+
+
+state 119
+	residue : RESIDUE INTEGER CHAIN '_' atom '.' color .  (41)
+
+	.  reduce 41
+
+
+state 120
+	residue : RESIDUE INTEGER '_' atom '-' hydrogen '.' . color  (44)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 125
+
+
+state 121
+	molecule : MOLECULE INTEGER CHAIN '_' atom '-' hydrogen . '.' color  (51)
+
+	'.'  shift 126
+	.  error
+
+
+state 122
+	molecule : MOLECULE INTEGER CHAIN '_' atom '.' color .  (49)
+
+	.  reduce 49
+
+
+state 123
+	molecule : MOLECULE INTEGER '_' atom '-' hydrogen '.' . color  (50)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 127
+
+
+state 124
+	residue : RESIDUE INTEGER CHAIN '_' atom '-' hydrogen '.' . color  (45)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 128
+
+
+state 125
+	residue : RESIDUE INTEGER '_' atom '-' hydrogen '.' color .  (44)
+
+	.  reduce 44
+
+
+state 126
+	molecule : MOLECULE INTEGER CHAIN '_' atom '-' hydrogen '.' . color  (51)
+
+	COLOR  shift 69
+	'{'  shift 70
+	'('  shift 71
+	.  error
+
+	color  goto 129
+
+
+state 127
+	molecule : MOLECULE INTEGER '_' atom '-' hydrogen '.' color .  (50)
+
+	.  reduce 50
+
+
+state 128
+	residue : RESIDUE INTEGER CHAIN '_' atom '-' hydrogen '.' color .  (45)
+
+	.  reduce 45
+
+
+state 129
+	molecule : MOLECULE INTEGER CHAIN '_' atom '-' hydrogen '.' color .  (51)
+
+	.  reduce 51
+
+
+State 33 contains 6 shift/reduce conflicts.
+
+
+33 terminals, 19 nonterminals
+64 grammar rules, 130 states
